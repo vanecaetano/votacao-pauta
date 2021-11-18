@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
 public class VotoRowMapper implements RowMapper<Voto> {
 
@@ -14,7 +15,7 @@ public class VotoRowMapper implements RowMapper<Voto> {
         Voto voto = new Voto();
         voto.setIdPauta(rs.getLong("id_pauta"));
         voto.setIdAssociado(rs.getString("id_associado"));
-        voto.setVoto(VotoOpcao.valueOf(rs.getString("voto")));
+        voto.setVoto(VotoOpcao.valueOf(rs.getString("voto").toUpperCase()));
         return voto;
     }
 }

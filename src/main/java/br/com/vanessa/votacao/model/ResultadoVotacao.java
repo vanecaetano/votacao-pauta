@@ -9,6 +9,13 @@ public class ResultadoVotacao {
     private long totalNao;
     private boolean votacaoEncerrada;
 
+    public ResultadoVotacao(Long idPauta, long totalSim, long totalNao, boolean votacaoEncerrada) {
+        this.idPauta = idPauta;
+        this.totalSim = totalSim;
+        this.totalNao = totalNao;
+        this.votacaoEncerrada = votacaoEncerrada;
+    }
+
     public Long getIdPauta() {
         return idPauta;
     }

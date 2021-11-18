@@ -1,6 +1,6 @@
 package br.com.vanessa.votacao;
 
-import br.com.vanessa.votacao.controller.VotacaoController;
+import br.com.vanessa.votacao.controller.VotacaoPautaAssembleiaController;
 import br.com.vanessa.votacao.model.Pauta;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.List;
 class VotacaoControllerTest {
 
 	@Autowired
-	VotacaoController votacaoController;
+	VotacaoPautaAssembleiaController votacaoController;
 
 	@Test
 	@Transactional
