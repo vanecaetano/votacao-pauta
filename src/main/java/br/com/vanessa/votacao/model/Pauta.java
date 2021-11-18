@@ -1,11 +1,16 @@
 package br.com.vanessa.votacao.model;
 
+import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Pauta {
+public class Pauta implements Serializable {
+
     private Long id;
+    @NotBlank(message = "campo [nome] é obrigatório")
     private String nome;
+    @NotBlank(message = "Campo [descricao] é obrigatório")
     private String descricao;
     private LocalDateTime dataInicioVotacao;
     private LocalDateTime dataFinalVotacao;

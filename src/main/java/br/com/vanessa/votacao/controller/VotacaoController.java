@@ -1,6 +1,7 @@
 package br.com.vanessa.votacao.controller;
 
 import br.com.vanessa.votacao.model.Pauta;
+import br.com.vanessa.votacao.model.Voto;
 import br.com.vanessa.votacao.service.VotacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,16 @@ public class VotacaoController {
                 .body(votacaoService.abreVotacao(idPauta, tempoEmMinutos));
     }
 
-    //votar
+    @PostMapping("/votacao/voto")
+    public ResponseEntity recebeVoto(@RequestBody @Valid Voto voto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(votacaoService.recebeVoto(voto));
+    }
 
+    @GetMapping("/votacao/{idPauta}/resultado")
+    public ResponseEntity resultadoVotacao(@PathVariable Long idPauta) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(votacaoService.resultadoVotacao(idPauta));
+    }
 
 }

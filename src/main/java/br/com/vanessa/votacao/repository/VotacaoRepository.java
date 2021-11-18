@@ -1,9 +1,9 @@
 package br.com.vanessa.votacao.repository;
 
 import br.com.vanessa.votacao.model.Pauta;
+import br.com.vanessa.votacao.model.Voto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -27,7 +27,7 @@ public class VotacaoRepository {
         parameters.addValue("nome", pauta.getNome());
         parameters.addValue("descricao", pauta.getDescricao());
         parameters.addValue("data_inicio_votacao", pauta.getDataInicioVotacao(), Types.TIMESTAMP);
-        parameters.addValue("data_inicio_votacao", pauta.getDataFinalVotacao(), Types.TIMESTAMP);
+        parameters.addValue("data_fim_votacao", pauta.getDataFinalVotacao(), Types.TIMESTAMP);
 
         return namedParameterJdbcTemplate.update(sql, parameters);
     }
@@ -55,5 +55,23 @@ public class VotacaoRepository {
         parameters.addValue("data_fim_votacao", pauta.getDataFinalVotacao(), Types.TIMESTAMP);
         parameters.addValue("id", pauta.getId());
 
-        return namedParameterJdbcTemplate.update(sql, parameters);    }
+        return namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+    public void registraVoto(Voto voto) {
+        String sql = "INSERT INTO VOTACAO_PAUTA (id_pauta, id_associado, voto) " +
+                "VALUES (:id_pauta, :id_associado, :voto)";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id_pauta", voto.getIdPauta());
+        parameters.addValue("id_associado", voto.getIdAssociado());
+        parameters.addValue("voto", voto.getVoto().getDescricao());
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+    public List<Voto> buscaVotos(Long idPauta) {
+        String sql = "SELECT * from VOTACAO_PAUTA where id_pauta=:id_pauta";
+        Map<String, Long> parameters = new HashMap<String, Long>();
+        parameters.put("id_pauta", idPauta);
+        return namedParameterJdbcTemplate.query(sql, parameters, new VotoRowMapper());
+    }
 }
