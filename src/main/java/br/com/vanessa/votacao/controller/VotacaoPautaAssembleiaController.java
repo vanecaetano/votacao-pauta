@@ -46,23 +46,20 @@ public class VotacaoPautaAssembleiaController {
             pautaService.iniciaPauta(pauta, tempoEmMinutos);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Votação iniciada"));
-        } catch (PautaNaoExisteException pautaNaoExisteException) {
-            logger.error("Erro ao abrir votação de pauta", pautaNaoExisteException);
-            return new ResponseEntity(new ResponseMessage(pautaNaoExisteException.getMessage()),
-                    HttpStatus.NOT_FOUND);
+        } catch (PautaNaoExisteException pne) {
+            logger.error(ERRO_ABRIR_VOTACAO, pne);
+            return new ResponseEntity(new ResponseMessage(pne.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            logger.error(ERRO_ABRIR_VOTACAO, e);
+            return new ResponseEntity(new ResponseMessage(ERRO_ABRIR_VOTACAO), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/votacao/voto")
+    @RequestMapping(value = "/votacao/voto", method = RequestMethod.POST)
     public ResponseEntity recebeVoto(@RequestBody @Valid Voto voto) {
-        try {
             Pauta pauta = pautaService.buscaPauta(voto.getIdPauta());
             votacaoService.recebeVoto(pauta, voto);
             return new ResponseEntity(HttpStatus.OK);
-        } catch (PautaNaoExisteException pautaNaoExisteException) {
-            logger.error("Erro ao registrar voto", pautaNaoExisteException);
-            return new ResponseEntity(pautaNaoExisteException.getMessage(), HttpStatus.NOT_FOUND);
-        }
     }
 
     @GetMapping("/votacao/{idPauta}/resultado")
@@ -71,10 +68,13 @@ public class VotacaoPautaAssembleiaController {
             Pauta pauta = pautaService.buscaPauta(idPauta);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(votacaoService.resultadoVotacao(pauta));
-        } catch (PautaNaoExisteException pautaNaoExisteException) {
-            logger.error("Erro ao buscar resultado da votação", pautaNaoExisteException);
-            return new ResponseEntity(pautaNaoExisteException.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            logger.error("Erro ao buscar resultado da votação", e);
+            return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    private static final String ERRO_ABRIR_VOTACAO = "Erro ao abrir votação de pauta";
+    private static final String ERRO_REGISTRAR_VOTO = "Erro ao registrar voto";
 
 }

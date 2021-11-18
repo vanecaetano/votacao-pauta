@@ -1,8 +1,10 @@
 package br.com.vanessa.votacao.repository;
 
+import br.com.vanessa.votacao.exception.PautaNaoExisteException;
 import br.com.vanessa.votacao.model.Pauta;
 import br.com.vanessa.votacao.model.Voto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -42,7 +44,12 @@ public class PautaRepository {
 
         Map<String, Long> parameters = new HashMap<String, Long>();
         parameters.put("id", id);
-        return (Optional<Pauta>) Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, new PautaRowMapper()));
+
+        try {
+           return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, new PautaRowMapper()));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public int atualizaPauta(Pauta pauta) {
