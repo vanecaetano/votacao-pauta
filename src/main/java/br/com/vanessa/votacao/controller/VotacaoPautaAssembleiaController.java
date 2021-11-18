@@ -5,7 +5,8 @@ import br.com.vanessa.votacao.model.Pauta;
 import br.com.vanessa.votacao.model.Voto;
 import br.com.vanessa.votacao.service.PautaService;
 import br.com.vanessa.votacao.service.VotacaoService;
-import lombok.extern.log4j.Log4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@Log4j
 public class VotacaoPautaAssembleiaController {
+
+    private static final Logger logger = LoggerFactory.getLogger(VotacaoPautaAssembleiaController.class);
 
     @Autowired
     private VotacaoService votacaoService;
@@ -41,10 +43,13 @@ public class VotacaoPautaAssembleiaController {
                                       @RequestParam(required=true, defaultValue="1") Integer tempoEmMinutos) {
         try {
             Pauta pauta = pautaService.buscaPauta(idPauta);
+            pautaService.iniciaPauta(pauta, tempoEmMinutos);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(pautaService.iniciaPauta(pauta, tempoEmMinutos));
+                    .body(new ResponseMessage("Votação iniciada"));
         } catch (PautaNaoExisteException pautaNaoExisteException) {
-            return new ResponseEntity(pautaNaoExisteException.getMessage(), HttpStatus.NOT_FOUND);
+            logger.error("Erro ao abrir votação de pauta", pautaNaoExisteException);
+            return new ResponseEntity(new ResponseMessage(pautaNaoExisteException.getMessage()),
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -55,6 +60,7 @@ public class VotacaoPautaAssembleiaController {
             votacaoService.recebeVoto(pauta, voto);
             return new ResponseEntity(HttpStatus.OK);
         } catch (PautaNaoExisteException pautaNaoExisteException) {
+            logger.error("Erro ao registrar voto", pautaNaoExisteException);
             return new ResponseEntity(pautaNaoExisteException.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
@@ -66,6 +72,7 @@ public class VotacaoPautaAssembleiaController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(votacaoService.resultadoVotacao(pauta));
         } catch (PautaNaoExisteException pautaNaoExisteException) {
+            logger.error("Erro ao buscar resultado da votação", pautaNaoExisteException);
             return new ResponseEntity(pautaNaoExisteException.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
