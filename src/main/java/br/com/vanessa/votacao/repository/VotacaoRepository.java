@@ -4,39 +4,56 @@ import br.com.vanessa.votacao.model.Pauta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class VotacaoRepository {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public int salvarPauta(Pauta pauta) {
-        return jdbcTemplate.update("INSERT INTO PAUTA (nome, descricao, data_inicio_votacao, data_fim_votacao) VALUES(?,?,?,?)",
-                pauta.getNome(), pauta.getDescricao(), pauta.getDataInicioVotacao(), pauta.getDataFinalVotacao());
+        String sql = "INSERT INTO PAUTA (nome, descricao, data_inicio_votacao, data_fim_votacao) " +
+                "VALUES (:nome, :descricao, :data_inicio_votacao, :data_fim_votacao)";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("nome", pauta.getNome());
+        parameters.addValue("descricao", pauta.getDescricao());
+        parameters.addValue("data_inicio_votacao", pauta.getDataInicioVotacao(), Types.TIMESTAMP);
+        parameters.addValue("data_inicio_votacao", pauta.getDataFinalVotacao(), Types.TIMESTAMP);
+
+        return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
     public List<Pauta> buscaPautas() {
-        return jdbcTemplate.query("SELECT * from PAUTA", BeanPropertyRowMapper.newInstance(Pauta.class));
+        String sql = "SELECT * from PAUTA";
+        return namedParameterJdbcTemplate.query(sql, new PautaRowMapper());
     }
 
     public Pauta buscaPauta(Long id) {
-        try {
-            Pauta pauta = jdbcTemplate.queryForObject("SELECT * FROM PAUTA WHERE id=?",
-                    BeanPropertyRowMapper.newInstance(Pauta.class), id);
+        String sql = "SELECT * from PAUTA where id =:id";
 
-            return pauta;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
+        Map<String, Long> parameters = new HashMap<String, Long>();
+        parameters.put("id", id);
+        return (Pauta) namedParameterJdbcTemplate.queryForObject(sql, parameters, new PautaRowMapper());
     }
 
     public int atualizaPauta(Pauta pauta) {
-        return jdbcTemplate.update("UPDATE PAUTA SET data_inicio_votacao=?, data_fim_votacao=? WHERE id=?",
-                pauta.getDataInicioVotacao(), pauta.getDataFinalVotacao(), pauta.getId());
-    }
+        String sql = "UPDATE PAUTA SET data_inicio_votacao=:data_inicio_votacao, " +
+                "data_fim_votacao=:data_fim_votacao " +
+                "WHERE id =:id";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("data_inicio_votacao", pauta.getDataInicioVotacao(), Types.TIMESTAMP);
+        parameters.addValue("data_fim_votacao", pauta.getDataFinalVotacao(), Types.TIMESTAMP);
+        parameters.addValue("id", pauta.getId());
+
+        return namedParameterJdbcTemplate.update(sql, parameters);    }
 }

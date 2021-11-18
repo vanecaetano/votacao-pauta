@@ -26,7 +26,7 @@ public class VotacaoService {
         Pauta pauta = votacaoRepository.buscaPauta(idPauta);
         //verificar se pauta já não foi iniciada etc
         pauta.setDataInicioVotacao(LocalDateTime.now());
-        pauta.setDataFinalVotacao(LocalDateTime.now().plusMinutes(tempoEmMinutos));
+        pauta.setDataFinalVotacao(pauta.getDataInicioVotacao().plusMinutes(tempoEmMinutos));
         return votacaoRepository.atualizaPauta(pauta);
     }
 }
