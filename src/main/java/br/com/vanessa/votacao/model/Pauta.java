@@ -9,7 +9,6 @@ public class Pauta {
     private String descricao;
     private LocalDateTime dataInicioVotacao;
     private LocalDateTime dataFinalVotacao;
-    private PautaSituacao situacao = PautaSituacao.FECHADA;
 
     public Long getId() {
         return id;
@@ -51,24 +50,16 @@ public class Pauta {
         this.dataFinalVotacao = dataFinalVotacao;
     }
 
-    public PautaSituacao getSituacao() {
-        return situacao;
-    }
-
-    public void setSituacao(PautaSituacao situacao) {
-        this.situacao = situacao;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pauta pauta = (Pauta) o;
-        return Objects.equals(id, pauta.id) && Objects.equals(nome, pauta.nome) && Objects.equals(descricao, pauta.descricao) && Objects.equals(dataInicioVotacao, pauta.dataInicioVotacao) && Objects.equals(dataFinalVotacao, pauta.dataFinalVotacao) && situacao == pauta.situacao;
+        return Objects.equals(id, pauta.id) && Objects.equals(nome, pauta.nome) && Objects.equals(descricao, pauta.descricao) && Objects.equals(dataInicioVotacao, pauta.dataInicioVotacao) && Objects.equals(dataFinalVotacao, pauta.dataFinalVotacao);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome, descricao, dataInicioVotacao, dataFinalVotacao, situacao);
+        return Objects.hash(id, nome, descricao, dataInicioVotacao, dataFinalVotacao);
     }
 }

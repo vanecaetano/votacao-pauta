@@ -5,6 +5,7 @@ import br.com.vanessa.votacao.repository.VotacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,5 +20,13 @@ public class VotacaoService {
 
     public List<Pauta> buscaPautas() {
         return votacaoRepository.buscaPautas();
+    }
+
+    public int abreVotacao(Long idPauta, Integer tempoEmMinutos) {
+        Pauta pauta = votacaoRepository.buscaPauta(idPauta);
+        //verificar se pauta já não foi iniciada etc
+        pauta.setDataInicioVotacao(LocalDateTime.now());
+        pauta.setDataFinalVotacao(LocalDateTime.now().plusMinutes(tempoEmMinutos));
+        return votacaoRepository.atualizaPauta(pauta);
     }
 }
