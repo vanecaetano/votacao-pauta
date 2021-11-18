@@ -1,9 +1,6 @@
 package br.com.vanessa.votacao.service;
 
-import br.com.vanessa.votacao.exception.PautaNaoExisteException;
-import br.com.vanessa.votacao.exception.VotacaoEncerradaException;
-import br.com.vanessa.votacao.exception.VotacaoNaoIniciadaException;
-import br.com.vanessa.votacao.exception.VotoAssociadoNaoPermitidoException;
+import br.com.vanessa.votacao.exception.*;
 import br.com.vanessa.votacao.model.Pauta;
 import br.com.vanessa.votacao.model.ResultadoVotacao;
 import br.com.vanessa.votacao.model.Voto;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VotacaoService {
@@ -27,9 +25,13 @@ public class VotacaoService {
 
     public void recebeVoto(Pauta pauta, Voto voto) {
         if (pauta.getDataInicioVotacao() == null) throw new VotacaoNaoIniciadaException("Votação ainda não foi iniciada");
-        if (LocalDateTime.now().isAfter(pauta.getDataFinalVotacao())) throw new VotacaoEncerradaException("Pauta já foi finalizada");
-        if (associadoRepository.associadoPodeVotar(voto.getIdAssociado())) votacaoRepository.registraVoto(voto);
-        else throw new VotoAssociadoNaoPermitidoException("Associado não está habilitado para votar na pauta");
+        if (LocalDateTime.now().isAfter(pauta.getDataFinalVotacao())) throw new VotacaoEncerradaException("Votação já foi finalizada");
+        if (votacaoRepository.existeVotoAssociado(pauta.getId(), voto.getIdAssociado())) throw new AssociadoJaVotouPautaException("Já existe registro de voto do associado na pauta");
+        if (associadoRepository.associadoPodeVotar(voto.getIdAssociado())) {
+            votacaoRepository.registraVoto(voto);
+        } else {
+            throw new VotoAssociadoNaoPermitidoException("Associado não está habilitado para votar na pauta");
+        }
     }
 
     public ResultadoVotacao resultadoVotacao(Pauta pauta) {

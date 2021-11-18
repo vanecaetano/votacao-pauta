@@ -1,16 +1,13 @@
 package br.com.vanessa.votacao.exception;
 
-import java.util.List;
 
 public class ErrorResponse {
 
     private String message;
-    private List<String> details;
 
-    public ErrorResponse(String message, List<String> details) {
+    public ErrorResponse(String message) {
         super();
         this.message = message;
-        this.details = details;
     }
 
     public String getMessage() {
@@ -19,13 +16,5 @@ public class ErrorResponse {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public List<String> getDetails() {
-        return details;
-    }
-
-    public void setDetails(List<String> details) {
-        this.details = details;
     }
 }

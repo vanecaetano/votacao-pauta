@@ -3,6 +3,7 @@ package br.com.vanessa.votacao.repository;
 import br.com.vanessa.votacao.model.Pauta;
 import br.com.vanessa.votacao.model.Voto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -44,6 +45,20 @@ public class VotacaoRepository {
         Map<String, Long> parameters = new HashMap<String, Long>();
         parameters.put("id", id);
         return (Optional<Pauta>) Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, new PautaRowMapper()));
+    }
+
+    public boolean existeVotoAssociado(Long idPauta, String idAssociado) {
+        String sql = "SELECT * from VOTACAO_PAUTA where id_pauta=:id_pauta AND id_associado=:id_associado";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id_pauta", idPauta);
+        parameters.put("id_associado", idAssociado);
+        try {
+            namedParameterJdbcTemplate.queryForObject(sql, parameters, new VotoRowMapper());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     public int atualizaPauta(Pauta pauta) {
