@@ -1,5 +1,7 @@
 package br.com.vanessa.votacao.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,7 +14,9 @@ public class Pauta implements Serializable {
     private String nome;
     @NotBlank(message = "Campo [descricao] é obrigatório")
     private String descricao;
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss a")
     private LocalDateTime dataInicioVotacao;
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss a")
     private LocalDateTime dataFinalVotacao;
 
     public Long getId() {
