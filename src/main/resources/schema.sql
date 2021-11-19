@@ -1,4 +1,4 @@
-CREATE TABLE PAUTA (
+CREATE TABLE IF NOT EXISTS PAUTA (
   id serial PRIMARY KEY,
   nome VARCHAR(250) NOT NULL,
   descricao VARCHAR(250) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE PAUTA (
   data_fim_votacao TIMESTAMP NULL
 );
 
-create table VOTACAO_PAUTA (
+CREATE TABLE IF NOT EXISTS VOTACAO_PAUTA (
  id_pauta  integer not null,
  id_associado varchar(250) not null,
  voto varchar(3) not null,
